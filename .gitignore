@@ -1,0 +1,91 @@
+*.py[cod]
+*.o
+*.d
+*.map
+
+# Private settings
+private_settings.py
+
+# Eclipse Project Files
+.cproject
+.project
+.pydevproject
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+*.spec
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+*.bak
+
+# ctags
+tags
+
+# Doxygen output
+html
+
+#PyCharm project files
+.idea
+
+# Visual Studio Code
+.vscode
+
+# Coverage
+cover
+htmlcov
+
+# Common virtualenv environment names
+/env
+/env3
+/venv*
+/dev
+/windev
+
+automated_test_result.txt
+automated_test_results_*.txt
+automated_test_summary.txt
+test_params.txt
+output.txt
+gdb_test_raw.txt
+test_results.txt
+
+.cache
+.pytest_cache
+.eggs/
+pyocd/_version.py
+
+# pyocd config files
+pyocd.yaml
+pyocd_user.py
+
+
