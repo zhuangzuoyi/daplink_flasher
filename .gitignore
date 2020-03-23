@@ -88,4 +88,6 @@ pyocd/_version.py
 pyocd.yaml
 pyocd_user.py
 
+*.pack
+
 

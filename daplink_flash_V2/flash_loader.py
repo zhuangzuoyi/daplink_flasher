@@ -30,57 +30,6 @@ class Flash_Loader(object):
         current_packs=[]
         self.current_targets=[]
 
-        # show all vendor in ui
-        # for pack in self.packs:
-        #     if pack.vendor in vendors:
-        #         pass
-        #     else:
-        #         vendors.append(pack.vendor)
-
-        for pack in self.packs:
-            pack_path = os.path.join(self.cache.data_path, pack.get_pack_name())
-            pack_temp = CmsisPack(pack_path)
-            if len(pack_temp.devices) > 0:
-                target_vendor = pack_temp.devices[0].vendor
-            else:
-                continue
-
-            if target_vendor in vendors:
-                pass
-            else:
-                vendors.append(target_vendor)
-
-        for vendor in vendors:
-            self.ui.vendor_list.addItem(vendor)
-
-        # show the first vendor's all device in ui in vendor list 
-        # for pack in self.packs:
-        #     # print("%s| *%s|" %(pack.vendor,ui.vendor_list.currentText()))
-        #     if pack.vendor == self.ui.vendor_list.currentText():
-        #         current_packs.append(pack)
-        #         # print("fix")
-        for pack in self.packs:
-            pack_path = os.path.join(self.cache.data_path, pack.get_pack_name())
-            pack_temp = CmsisPack(pack_path)
-            if len(pack_temp.devices) > 0:
-                target_vendor = pack_temp.devices[0].vendor
-            else:
-                continue
-            if target_vendor == self.ui.vendor_list.currentText():
-                current_packs.append(pack)
-
-        # print(ui.vendor_list.currentText())            
-        for current_pack in current_packs:
-            # print(type(current_pack))
-            pack_path = os.path.join(self.cache.data_path, current_pack.get_pack_name())
-            # print(pack_path)
-            pack = CmsisPack(pack_path)
-            for device in pack.devices:
-                self.current_targets.append(device)
-        # print(current_targets)    
-        for target in self.current_targets:
-            self.ui.device_list.addItem(target.part_number)
-
         probes = ConnectHelper.get_all_connected_probes(blocking=False)
         for probe in probes:
             self.ui.daplink_list.addItem(probe.description)
@@ -107,31 +56,7 @@ class Flash_Loader(object):
         app.exec_()
 
     def get_targets_in_vendor(self,vendor):
-        select_vendor_packs=[]
-        self.current_targets.clear()
-
-        # print("get targets in vendor:%s" % vendor)
-        for pack in self.packs:
-            pack_path = os.path.join(self.cache.data_path, pack.get_pack_name())
-            pack_temp = CmsisPack(pack_path)
-            if len(pack_temp.devices) > 0:
-                target_vendor = pack_temp.devices[0].vendor
-            else:
-                continue
-            if target_vendor == vendor:
-                select_vendor_packs.append(pack)
-        # print(select_vendor_packs)
-        for current_pack in select_vendor_packs:
-            # print(type(current_pack))
-            pack_path = os.path.join(self.cache.data_path, current_pack.get_pack_name())
-            # print(pack_path)
-            pack = CmsisPack(pack_path)
-            for device in pack.devices:
-                self.current_targets.append(device)
-        # print(current_targets)
-        self.ui.device_list.clear()
-        for target in self.current_targets:
-            self.ui.device_list.addItem(target.part_number)
+        pass
 
 
     def daplink_change(self):
@@ -181,22 +106,9 @@ class Flash_Loader(object):
 
         
     def device_change(self):
-        # print("device change")
-        print("In device change slot current device is:%s" %self.ui.device_list.currentText())
-        for device in self.current_targets:
-            if device.part_number == self.ui.device_list.currentText():
-                self.active_device = device
-        # print(self.active_device.memory_map)
-        device_msg = self.ui.vendor_list.currentText() + "  " + self.active_device.part_number + ":  "
-        for region in self.active_device.memory_map.regions:
-            le = region.length/1024
-            no = str(le).split('.')[0] + "K"
-            if region.type == MemoryType.FLASH:
-                device_msg = device_msg + "    flash"  + ":" + no + "  "
-            elif region.type == MemoryType.RAM:
-                device_msg = device_msg + "    ram"  + ":  " + no + "  "
-        self.ui.log.clear()
-        self.ui.log.append(device_msg)
+        print("device change")
+
+
 
     def flash_device(self):
         print("flash device")
@@ -207,6 +119,8 @@ class Flash_Loader(object):
         else:
             QMessageBox.critical(self.window,"ERROR","Firmware is not exist",QMessageBox.Yes)
             # QMessageBox.critical
+
+
     def progress_monitor(self, amount):
         print("progress")
         print(amount)
@@ -235,45 +149,4 @@ class Flash_Loader(object):
 
 
 if __name__ == '__main__':
-    # probes = ConnectHelper.get_all_connected_probes()
     Flash_Loader()
-    # app = QApplication(sys.argv)
-    # window = QWidget()
-
-    # ui = Ui_Form()
-    # ui.setupUi(window)
-    # cache = cmsis_pack_manager.Cache(True, True)
-    # managedpack = ManagedPacks()
-    # packs = ManagedPacks().get_installed_packs()
-    # vendors =[]
-    # current_packs=[]
-    # current_targets=[]
-
-    # for pack in packs:
-    #     # print(pack.vendor)
-    #     if pack.vendor in vendors:
-    #         pass
-    #     else:
-    #         vendors.append(pack.vendor)
-    # for vendor in vendors:
-    #     ui.vendor_list.addItem(vendor)
-
-    # for pack in packs:
-    #     # print("%s| *%s|" %(pack.vendor,ui.vendor_list.currentText()))
-    #     if pack.vendor == ui.vendor_list.currentText():
-    #         current_packs.append(pack)
-    #         print("fix")
-    # # print(ui.vendor_list.currentText())            
-    # for current_pack in current_packs:
-    #     # print(type(current_pack))
-    #     pack_path = os.path.join(cache.data_path, current_pack.get_pack_name())
-    #     print(pack_path)
-    #     pack = CmsisPack(pack_path)
-    #     current_targets.append(pack.devices)
-    # print(current_targets)    
-    # for targets in current_targets:
-    #     # ui.device_list.addItem(target.)    
-    #     for target in targets:
-    #         ui.device_list.addItem(target.part_number)
-    # window.show()
-    # app.exec_()
