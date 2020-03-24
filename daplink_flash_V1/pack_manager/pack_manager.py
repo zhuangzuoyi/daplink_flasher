@@ -5,6 +5,7 @@ import os
 # from pyocd.target.pack import pack_target ManagedPacks
 from PyQt5.QtWidgets import QApplication, QComboBox, QDialog, QVBoxLayout, QTableWidgetItem, QFileDialog, QMessageBox
 from PyQt5.QtCore import pyqtSignal, QThread, Qt
+from PyQt5.QtGui import QIcon
 
 from pack_manager_ui import *
 from threading import Thread
@@ -84,8 +85,8 @@ class Pack_Manager(object):
         self.installed_pack=[]
         packs = ManagedPacks.get_installed_packs()
         for pack in packs:
-            self.installed_pack.append(pack.get_pack_name())
-
+            self.installed_pack.append(pack.get_pack_name().split('\\')[1])
+        # print(packs[0].get_pack_name())
         self.ui.device_list.currentIndexChanged.connect(self.device_change)
         self.ui.vendor_list.currentIndexChanged.connect(self.vendor_change)
         self.ui.device_fileter.textChanged.connect(self.device_filter)
@@ -135,7 +136,15 @@ class Pack_Manager(object):
                 self.ui.tableWidget.setItem(i, 3, item)
 
                 # self.ui.vendor_list.addItem(vendor)
-                
+                if index["from_pack"]["pack"] in self.installed_pack:
+                    # print("%s installed" % index["from_pack"]["pack"])
+                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                else:
+                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+
+                item.setTextAlignment(Qt.AlignCenter)
+                self.ui.tableWidget.setItem(i, 4, item)
+
 
                 self.ui.device_list.addItem(index["name"])
                 i = i+1
@@ -178,6 +187,18 @@ class Pack_Manager(object):
                 item = QTableWidgetItem(index[pack_index]["from_pack"]["version"])
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 3, item)
+
+
+                # self.ui.vendor_list.addItem(vendor)
+                if index[pack_index]["from_pack"]["pack"] in self.installed_pack:
+                    # print("%s installed" % index["from_pack"]["pack"])
+                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                else:
+                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+
+                item.setTextAlignment(Qt.AlignCenter)
+                self.ui.tableWidget.setItem(i, 4, item)
+
 
                 if index[pack_index]["vendor"].split(':')[0] in self.all_vendor:
                     pass
@@ -226,6 +247,19 @@ class Pack_Manager(object):
                     # self.ui.vendor_list.addItem(vendor)
 
                     self.ui.device_list.addItem(index["name"])
+
+
+                    # self.ui.vendor_list.addItem(vendor)
+                    if index["from_pack"]["pack"] in self.installed_pack:
+                        # print("%s installed" % index["from_pack"]["pack"])
+                        item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                    else:
+                        item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+
+                    item.setTextAlignment(Qt.AlignCenter)
+                    self.ui.tableWidget.setItem(i, 4, item)
+
+
                     i = i+1
             else:
                 item = QTableWidgetItem(index["name"])
@@ -245,6 +279,16 @@ class Pack_Manager(object):
                 self.ui.tableWidget.setItem(i, 3, item)
 
                 self.ui.device_list.addItem(index["name"])
+
+                # self.ui.vendor_list.addItem(vendor)
+                if index["from_pack"]["pack"] in self.installed_pack:
+                    # print("%s installed" % index["from_pack"]["pack"])
+                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                else:
+                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+
+                item.setTextAlignment(Qt.AlignCenter)
+                self.ui.tableWidget.setItem(i, 4, item)
                 i = i+1
     def show_select_device_pack(self,device):
         i = 0
@@ -254,19 +298,31 @@ class Pack_Manager(object):
         for index in self.all_index:
             if index["name"] == device:
                 item = QTableWidgetItem(index["name"])
+                item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 0, item)
 
                 item = QTableWidgetItem(index["vendor"].split(':')[0])
+                item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 1, item)
 
                 item = QTableWidgetItem(index["from_pack"]["pack"])
+                item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 2, item)
 
                 item = QTableWidgetItem(index["from_pack"]["version"])
+                item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 3, item)
 
                 # self.ui.vendor_list.addItem(vendor)
+                # self.ui.vendor_list.addItem(vendor)
+                if index["from_pack"]["pack"] in self.installed_pack:
+                    # print("%s installed" % index["from_pack"]["pack"])
+                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                else:
+                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
 
+                item.setTextAlignment(Qt.AlignCenter)
+                self.ui.tableWidget.setItem(i, 4, item)
                 # self.ui.device_list.addItem(index["name"])
                 i = i+1
 
