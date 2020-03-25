@@ -3,7 +3,7 @@
 import sys
 import os
 # from pyocd.target.pack import pack_target ManagedPacks
-from PyQt5.QtWidgets import QApplication, QComboBox, QDialog, QVBoxLayout, QTableWidgetItem, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QComboBox, QDialog, QVBoxLayout, QTableWidgetItem, QFileDialog, QMessageBox, QAbstractItemView
 from PyQt5.QtCore import pyqtSignal, QThread, Qt
 from PyQt5.QtGui import QIcon
 
@@ -91,10 +91,18 @@ class Pack_Manager(object):
         self.ui.vendor_list.currentIndexChanged.connect(self.vendor_change)
         self.ui.device_fileter.textChanged.connect(self.device_filter)
 
+        self.ui.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.ui.tableWidget.clicked.connect(self.item_clicked)
         self.show_all_packs_in_table()
         self.window.show()
         app.exec_()
     
+    def item_clicked(self):
+        print("item clicked")
+        print(self.ui.tableWidget.selectedItems()[0].text())
+        self.get_pack_url(self.ui.tableWidget.selectedItems()[2].text(),self.ui.tableWidget.selectedItems()[3].text())
+
+
     def download_pack(self):
         print("down loading")
         self.download_thread.start()
@@ -150,6 +158,15 @@ class Pack_Manager(object):
                 i = i+1
 
 
+    def get_pack_url(self,pack,version):
+        json_path = user_data_dir('cmsis-pack-manager')
+        index_path = join(json_path, "index.json")
+        with open(index_path) as i:
+            index = load(i)
+            for pack_index in index:
+                if pack == index[pack_index]["from_pack"]['pack']  and  version == index[pack_index]["from_pack"]['version']:
+                    print(index[pack_index]["from_pack"]['url'] + index[pack_index]["from_pack"]['vendor'] + '.' +  index[pack_index]["from_pack"]['pack'] + '.' + index[pack_index]["from_pack"]['version'] + ".pack")
+                # print("\r\n\r\n")
     def show_all_packs_in_table(self):
         json_path = user_data_dir('cmsis-pack-manager')
         index_path = join(json_path, "index.json")
