@@ -89,5 +89,4 @@ pyocd.yaml
 pyocd_user.py
 
 *.pack
-
-
+*test.py

@@ -47,6 +47,12 @@ class Ui_PackManager(object):
         self.pushButton_3 = QtWidgets.QPushButton(PackManager)
         self.pushButton_3.setObjectName("pushButton_3")
         self.horizontalLayout_2.addWidget(self.pushButton_3)
+        self.pack_filster = QtWidgets.QComboBox(PackManager)
+        self.pack_filster.setObjectName("pack_filster")
+        self.pack_filster.addItem("")
+        self.pack_filster.addItem("")
+        self.pack_filster.addItem("")
+        self.horizontalLayout_2.addWidget(self.pack_filster)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.tableWidget = QtWidgets.QTableWidget(PackManager)
         self.tableWidget.setObjectName("tableWidget")
@@ -63,9 +69,12 @@ class Ui_PackManager(object):
 
     def retranslateUi(self, PackManager):
         _translate = QtCore.QCoreApplication.translate
-        PackManager.setWindowTitle(_translate("PackManager", "Dialog"))
+        PackManager.setWindowTitle(_translate("PackManager", "PackManager"))
         self.label.setText(_translate("PackManager", "Vendor"))
         self.label_2.setText(_translate("PackManager", "Device"))
         self.pushButton.setText(_translate("PackManager", "PushButton"))
         self.pushButton_2.setText(_translate("PackManager", "PushButton"))
         self.pushButton_3.setText(_translate("PackManager", "PushButton"))
+        self.pack_filster.setItemText(0, _translate("PackManager", "all"))
+        self.pack_filster.setItemText(1, _translate("PackManager", "installed"))
+        self.pack_filster.setItemText(2, _translate("PackManager", "uninstall"))

@@ -12,12 +12,14 @@ from threading import Thread
 import cmsis_pack_manager
 import requests
 import time
-import sys
+
 from appdirs import user_data_dir
 from os.path import join, dirname, exists
 from json import load
 from pyocd.target.pack.pack_target import ManagedPacks
 
+Download_ico = "./img/downloaded.png"
+unDownload_ico = "./img/undownloaded.png"
 class Download_pack(QThread):
     signal = pyqtSignal(str)
     def __init__(self,url, path):
@@ -40,6 +42,8 @@ class Download_pack(QThread):
 
 
     def downloader(self, url, path):
+        print("Downloading url:%s" % url)
+        print("Downloading path:%s" % path)
         start = time.time()
         size = 0
         response = requests.get(url, stream=True)
@@ -59,8 +63,8 @@ class Download_pack(QThread):
                 for data in response.iter_content(chunk_size=chunk_size):
                     file.write(data)
                     size += len(data)
-                    # print('\r' + '下载进度：%s%.2f%%' % (">" * int(size * 50 /content_size), float(size / content_size * 100)), end="")
-                    msg = '\r' + '下载进度：{}{:.2f}%%'.format(">" * int(size * 50 / content_size), float(size / content_size * 100))
+                    # print('\r' + '下载进度：%s%.2f%%' % (">" * int(sie * 50 /content_size), float(size / content_size * 100)), end="")
+                    msg = '下载进度：{}{:.2f}%%'.format(">" * int(size * 50 / content_size), float(size / content_size * 100))
                     print("msg is:%s" % msg)
                     # self.ui.log.append(msg)
                     self.signal.emit(msg)
@@ -91,6 +95,9 @@ class Pack_Manager(object):
         self.ui.vendor_list.currentIndexChanged.connect(self.vendor_change)
         self.ui.device_fileter.textChanged.connect(self.device_filter)
 
+        self.select_pack = ''
+        self.select_pack_url = ''
+
         self.ui.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.ui.tableWidget.clicked.connect(self.item_clicked)
         self.show_all_packs_in_table()
@@ -100,11 +107,40 @@ class Pack_Manager(object):
     def item_clicked(self):
         print("item clicked")
         print(self.ui.tableWidget.selectedItems()[0].text())
-        self.get_pack_url(self.ui.tableWidget.selectedItems()[2].text(),self.ui.tableWidget.selectedItems()[3].text())
+        # self.get_pack_url(self.ui.tableWidget.selectedItems()[2].text(),self.ui.tableWidget.selectedItems()[3].text())
+        self.get_pack_url_partnumber(self.ui.tableWidget.selectedItems()[0].text())
 
+
+    def get_pack_url_partnumber(self,partnumber):
+        json_path = user_data_dir('cmsis-pack-manager')
+        index_path = join(json_path, "index.json")
+        with open(index_path) as i:
+            index = load(i)
+            for pack_index in index:
+                if partnumber == index[pack_index]["name"]:
+                    self.select_pack_url = index[pack_index]["from_pack"]['url'] + index[pack_index]["from_pack"]['vendor'] + '.' + index[pack_index]["from_pack"]['pack'] + '.' + \
+                               index[pack_index]["from_pack"]['version'] + ".pack"
+                    print(self.select_pack_url)
+                    self.select_pack = json_path + '\\' + \
+                        index[pack_index]["from_pack"]['vendor'] + \
+                        "\\" + index[pack_index]["from_pack"]['pack'] + "\\" + \
+                        index[pack_index]["from_pack"]['version'] + ".part"
+                    print(self.select_pack)
+
+                    self.select_pack_path = json_path + '\\' + \
+                        index[pack_index]["from_pack"]['vendor'] + \
+                        "\\" + index[pack_index]["from_pack"]['pack']
+                # print("\r\n\r\n")
 
     def download_pack(self):
         print("down loading")
+        if self.select_pack == '' or self.select_pack_url == '' or self.select_pack_path== '':
+            QMessageBox.critical(None, "critical", "Content", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            return
+        if os.path.exists(self.select_pack_path) is False:
+            os.makedirs(self.select_pack_path)
+        self.download_thread.set_path(self.select_pack)
+        self.download_thread.set_url(self.select_pack_url)
         self.download_thread.start()
 
 
@@ -146,9 +182,9 @@ class Pack_Manager(object):
                 # self.ui.vendor_list.addItem(vendor)
                 if index["from_pack"]["pack"] in self.installed_pack:
                     # print("%s installed" % index["from_pack"]["pack"])
-                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(Download_ico), "")
                 else:
-                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(unDownload_ico), "")
 
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 4, item)
@@ -209,9 +245,9 @@ class Pack_Manager(object):
                 # self.ui.vendor_list.addItem(vendor)
                 if index[pack_index]["from_pack"]["pack"] in self.installed_pack:
                     # print("%s installed" % index["from_pack"]["pack"])
-                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(Download_ico), "")
                 else:
-                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(unDownload_ico),"")
 
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 4, item)
@@ -269,9 +305,9 @@ class Pack_Manager(object):
                     # self.ui.vendor_list.addItem(vendor)
                     if index["from_pack"]["pack"] in self.installed_pack:
                         # print("%s installed" % index["from_pack"]["pack"])
-                        item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                        item = QTableWidgetItem(QIcon(Download_ico), "")
                     else:
-                        item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+                        item = QTableWidgetItem(QIcon(unDownload_ico), "")
 
                     item.setTextAlignment(Qt.AlignCenter)
                     self.ui.tableWidget.setItem(i, 4, item)
@@ -300,9 +336,9 @@ class Pack_Manager(object):
                 # self.ui.vendor_list.addItem(vendor)
                 if index["from_pack"]["pack"] in self.installed_pack:
                     # print("%s installed" % index["from_pack"]["pack"])
-                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(Download_ico), "")
                 else:
-                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(unDownload_ico), "")
 
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 4, item)
@@ -334,9 +370,9 @@ class Pack_Manager(object):
                 # self.ui.vendor_list.addItem(vendor)
                 if index["from_pack"]["pack"] in self.installed_pack:
                     # print("%s installed" % index["from_pack"]["pack"])
-                    item = QTableWidgetItem(QIcon("./img/circle-check-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(Download_ico), "")
                 else:
-                    item = QTableWidgetItem(QIcon("./img/circle-x-3x.png"),"")
+                    item = QTableWidgetItem(QIcon(unDownload_ico), "")
 
                 item.setTextAlignment(Qt.AlignCenter)
                 self.ui.tableWidget.setItem(i, 4, item)

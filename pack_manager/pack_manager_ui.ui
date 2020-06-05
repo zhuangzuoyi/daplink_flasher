@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>PackManager</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -46,9 +46,6 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QComboBox" name="comboBox"/>
-       </item>
-       <item>
         <widget class="QPushButton" name="pushButton">
          <property name="text">
           <string>PushButton</string>
@@ -67,6 +64,25 @@
          <property name="text">
           <string>PushButton</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="pack_filster">
+         <item>
+          <property name="text">
+           <string>all</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>installed</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>uninstall</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
