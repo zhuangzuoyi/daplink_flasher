@@ -190,6 +190,7 @@ class Flash_Loader(object):
     def device_change(self):
         # print("device change")
         print("In device change slot current device is:%s" %self.ui.device_list.currentText())
+        print(type(self.current_targets[0]))
         for device in self.current_targets:
             if device.part_number == self.ui.device_list.currentText():
                 self.active_device = device
